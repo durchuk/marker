@@ -3,6 +3,7 @@ from marker.pdf.images import render_bbox_image
 from marker.schema.bbox import rescale_bbox
 from marker.schema.block import find_insert_block, Span, Line
 from marker.settings import settings
+from marker.equations.equations import find_equation_blocks
 
 
 def find_image_blocks(page):
@@ -36,7 +37,7 @@ def find_image_blocks(page):
 
 def extract_page_images(page_obj, page):
     page.images = []
-    image_blocks = find_image_blocks(page)
+    image_blocks = find_image_blocks(page) + find_equation_blocks(page)
 
     for image_idx, (block_idx, line_idx, bbox) in enumerate(image_blocks):
         if block_idx >= len(page.blocks):

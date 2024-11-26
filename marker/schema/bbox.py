@@ -111,3 +111,16 @@ def rescale_bbox(orig_dim, new_dim, bbox):
 
     new_bbox = [bbox[0] / width_scaler, bbox[1] / height_scaler, bbox[2] / width_scaler, bbox[3] / height_scaler]
     return new_bbox
+
+def expand_bbox(bbox, expand_x=50, expand_y=15):
+    x0, y0, x1, y1 = bbox
+    return x0 - expand_x, y0 - expand_y, x1 + expand_x, y1 + expand_y
+
+def do_bboxes_overlap(bbox1, bbox2):
+    x0_1, y0_1, x1_1, y1_1 = bbox1
+    x0_2, y0_2, x1_2, y1_2 = bbox2
+
+    overlap_x = not (x1_1 < x0_2 or x1_2 < x0_1)
+    overlap_y = not (y1_1 < y0_2 or y1_2 < y0_1)
+
+    return overlap_x and overlap_y

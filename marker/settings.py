@@ -47,7 +47,7 @@ class Settings(BaseSettings):
     # OCR
     INVALID_CHARS: List[str] = [chr(0xfffd), "�"]
     OCR_ENGINE: Optional[Literal["surya", "ocrmypdf"]] = "surya" # Which OCR engine to use, either "surya" or "ocrmypdf".  Defaults to "ocrmypdf" on CPU, "surya" on GPU.
-    OCR_ALL_PAGES: bool = False # Run OCR on every page even if text can be extracted
+    OCR_ALL_PAGES: bool = True # Run OCR on every page even if text can be extracted
 
     ## Surya
     SURYA_OCR_DPI: int = 192

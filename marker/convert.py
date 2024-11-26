@@ -11,7 +11,6 @@ os.environ["PYTORCH_ENABLE_MPS_FALLBACK"] = "1" # For some reason, transformers 
 import pypdfium2 as pdfium # Needs to be at the top to avoid warnings
 from PIL import Image
 
-from marker.utils import flush_cuda_memory
 from marker.tables.table import format_tables
 from marker.debug.data import dump_bbox_debug_data, draw_page_debug_images
 from marker.layout.layout import surya_layout, annotate_block_types
@@ -21,7 +20,6 @@ from marker.ocr.detection import surya_detection
 from marker.ocr.recognition import run_ocr
 from marker.pdf.extract_text import get_text_blocks
 from marker.cleaners.headers import filter_header_footer, filter_common_titles
-from marker.equations.equations import replace_equations
 from marker.pdf.utils import find_filetype
 from marker.cleaners.code import identify_code_blocks, indent_blocks
 from marker.cleaners.bullets import replace_bullets
@@ -133,16 +131,7 @@ def convert_single_pdf(
             block.filter_spans(bad_span_ids)
             block.filter_bad_span_types()
 
-    filtered, eq_stats = replace_equations(
-        doc,
-        pages,
-        texify_model,
-        batch_multiplier=batch_multiplier
-    )
-    flush_cuda_memory()
-    out_meta["block_stats"]["equations"] = eq_stats
-
-    # Extract images and figures
+    # Extract images, figures and equations
     if settings.EXTRACT_IMAGES:
         extract_images(doc, pages)
 
@@ -155,7 +144,7 @@ def convert_single_pdf(
     out_meta["computed_toc"] = compute_toc(pages)
 
     # Copy to avoid changing original data
-    merged_lines = merge_spans(filtered)
+    merged_lines = merge_spans(pages)
     text_blocks = merge_lines(merged_lines)
     text_blocks = filter_common_titles(text_blocks)
     full_text = get_full_text(text_blocks)
